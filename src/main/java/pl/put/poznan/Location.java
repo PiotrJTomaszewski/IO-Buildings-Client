@@ -71,4 +71,5 @@ public abstract class Location {
             return Integer.toString(id);
         }
     }
+    public abstract void delete();
 }

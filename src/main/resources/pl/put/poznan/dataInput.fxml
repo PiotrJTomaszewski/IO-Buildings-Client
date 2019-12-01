@@ -30,21 +30,21 @@
                <children>
                   <Button fx:id="addRoomButton" mnemonicParsing="false" onMouseClicked="#addRoom" text="Add room" />
                   <Button fx:id="editRoomButton" mnemonicParsing="false" text="Edit room" />
-                  <Button fx:id="deleteRoomButton" mnemonicParsing="false" text="Delete room" />
+                  <Button fx:id="deleteRoomButton" mnemonicParsing="false" onMouseClicked="#deleteRoom" text="Delete room" />
                </children>
             </FlowPane>
             <FlowPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
                <children>
                   <Button fx:id="addFloorButton" mnemonicParsing="false" onMouseClicked="#addFloor" text="Add floor" />
-                  <Button mnemonicParsing="false" text="Button" />
-                  <Button fx:id="deleteFloorButton" mnemonicParsing="false" text="Delete floor" />
+                  <Button fx:id="editFloorButton" mnemonicParsing="false" text="Edit floor" />
+                  <Button fx:id="deleteFloorButton" mnemonicParsing="false" onMouseClicked="#deleteFloor" text="Delete floor" />
                </children>
             </FlowPane>
             <FlowPane prefHeight="200.0" prefWidth="200.0">
                <children>
                   <Button id="addBuildingButton" fx:id="addBuildingButton" mnemonicParsing="false" onMouseClicked="#addBuilding" text="Add building" />
-                  <Button mnemonicParsing="false" text="Button" />
-                  <Button fx:id="deleteBuildingButton" mnemonicParsing="false" text="Delete building" />
+                  <Button fx:id="editBuildingButton" mnemonicParsing="false" text="Edit building" />
+                  <Button fx:id="deleteBuildingButton" mnemonicParsing="false" onMouseClicked="#deleteBuilding" text="Delete building" />
                </children>
             </FlowPane>
             <ListView fx:id="roomPropertiesList" prefHeight="491.0" prefWidth="261.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />

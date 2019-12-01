@@ -27,56 +27,59 @@ public class DataInputController {
     @FXML
     private ListView<String> roomPropertiesList;
 
-    private void selectBuilding() {
+    private void refreshBuildingsList() {
+        ArrayList<Location> buildings = AppData.getBuildings();
+        buildingsList.getItems().clear();
+        buildingsList.getItems().addAll(buildings);
+        refreshFloorsList();
+    }
 
+    private void refreshFloorsList() {
+        Building selectedBuilding = (Building) buildingsList.getSelectionModel().getSelectedItem();
+        floorsList.getItems().clear();
+        if (selectedBuilding != null) {  // If a building is selected
+            ArrayList<Location> floors = selectedBuilding.getSubLocations();
+            floorsList.getItems().addAll(floors);
+        }
+        refreshRoomsList();
+    }
+
+    private void refreshRoomsList() {
+        Floor selectedFloor = (Floor) floorsList.getSelectionModel().getSelectedItem();
+        roomsList.getItems().clear();
+        if (selectedFloor != null) {  // If a floor is selected
+            ArrayList<Location> rooms = selectedFloor.getSubLocations();
+            roomsList.getItems().addAll(rooms);
+        }
+        refreshRoomPropertiesList();
+    }
+
+    private void refreshRoomPropertiesList() {
+        Room selectedRoom = (Room) roomsList.getSelectionModel().getSelectedItem();
+        roomPropertiesList.getItems().clear();
+        if (selectedRoom != null) {  // If a room is selected
+            ArrayList<String> roomProperties = selectedRoom.getProperties();
+            roomPropertiesList.getItems().addAll(roomProperties);
+        }
     }
 
     @FXML
     private void initialize() {
         buildingsList.getSelectionModel().selectedIndexProperty().addListener(
                 (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-                    Building selectedBuilding = (Building) buildingsList.getSelectionModel().getSelectedItem();
-                    ArrayList<Location> floors = selectedBuilding.getSubLocations();
-                    floorsList.getItems().clear();
-                    floorsList.getItems().addAll(floors);
-
-                    if (floorsList.getItems().isEmpty()) {
-                        roomsList.getItems().clear();
-                        roomPropertiesList.getItems().clear();
-                    } else {
-                        floorsList.getSelectionModel().selectFirst();
-                        roomsList.getSelectionModel().selectFirst();
-                    }
+                    refreshFloorsList();
                 }
         );
 
         floorsList.getSelectionModel().selectedIndexProperty().addListener(
                 (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-                    Floor selectedFloor = (Floor) floorsList.getSelectionModel().getSelectedItem();
-                    if (selectedFloor == null) {  // If no floor is selected
-                        return;
-                    }
-                    ArrayList<Location> rooms = selectedFloor.getSubLocations();
-                    roomsList.getItems().clear();
-                    roomsList.getItems().addAll(rooms);
-                    roomsList.getSelectionModel().selectFirst();
-                    if (roomsList.getItems().isEmpty()) {
-                        roomPropertiesList.getItems().clear();
-                    } else {
-                        roomsList.getSelectionModel().selectFirst();
-                    }
+                    refreshRoomsList();
                 }
         );
 
         roomsList.getSelectionModel().selectedIndexProperty().addListener(
                 (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-                    Room selectedRoom = (Room) roomsList.getSelectionModel().getSelectedItem();
-                    if (selectedRoom == null) {  // If no floor is selected
-                        return;
-                    }
-                    ArrayList<String> roomProperties = selectedRoom.getProperties();
-                    roomPropertiesList.getItems().clear();
-                    roomPropertiesList.getItems().addAll(roomProperties);
+                    refreshRoomPropertiesList();
                 }
         );
 
@@ -99,7 +102,7 @@ public class DataInputController {
     }
 
     @FXML
-    private void addBuilding() throws IOException {
+    private void addBuilding() throws IOException {  // TODO: Add checking for unique id
         FXMLLoader loader = showDialog("addBuildingDialog.fxml");
         Integer id = loader.<AddBuildingController>getController().getId();
         String name = loader.<AddBuildingController>getController().getName();
@@ -112,7 +115,7 @@ public class DataInputController {
     }
 
     @FXML
-    private void addFloor() throws IOException {
+    private void addFloor() throws IOException {  // TODO: Add checking for unique id
         Building parentBuilding = (Building) buildingsList.getSelectionModel().getSelectedItem();
         if (parentBuilding == null) {  //TODO: Add a proper message
             return;
@@ -129,25 +132,59 @@ public class DataInputController {
     }
 
     @FXML
-    private void addRoom() throws IOException {
-        Floor parentingFloor = (Floor) floorsList.getSelectionModel().getSelectedItem();
-        if (parentingFloor == null) { // TODO: Add a proper message
-            return;
-        }
-        FXMLLoader loader = showDialog("addRoomDialog.fxml");
-        Integer id = loader.<AddRoomController>getController().getId();
-        String name = loader.<AddRoomController>getController().getName();
-        int area = loader.<AddRoomController>getController().getArea();
-        int cube = loader.<AddRoomController>getController().getCube();
-        float heating = (float) loader.<AddRoomController>getController().getHeating();
-        int light = loader.<AddRoomController>getController().getLight();
-        if (id != null) {  // Add new room only if user pressed confirm
-            Room room = AppData.addRoom(id, name, area, cube, heating, light, parentingFloor);
-            if (room != null) {
-                roomsList.getItems().add(room);
-            }
+    private void addRoom() throws IOException {  // TODO: Add checking for unique id
+    Floor parentingFloor = (Floor) floorsList.getSelectionModel().getSelectedItem();
+        if(parentingFloor ==null)
+
+    { // TODO: Add a proper message
+        return;
+    }
+
+    FXMLLoader loader = showDialog("addRoomDialog.fxml");
+    Integer id = loader.<AddRoomController>getController().getId();
+    String name = loader.<AddRoomController>getController().getName();
+    int area = loader.<AddRoomController>getController().getArea();
+    int cube = loader.<AddRoomController>getController().getCube();
+    float heating = (float) loader.<AddRoomController>getController().getHeating();
+    int light = loader.<AddRoomController>getController().getLight();
+        if(id !=null)
+
+    {  // Add new room only if user pressed confirm
+        Room room = AppData.addRoom(id, name, area, cube, heating, light, parentingFloor);
+        if (room != null) {
+            roomsList.getItems().add(room);
         }
     }
 
+}
+
+    @FXML
+    private void deleteBuilding() {
+        Building selectedBuilding = (Building) buildingsList.getSelectionModel().getSelectedItem();
+        if (selectedBuilding != null) {
+            AppData.deleteLocation(selectedBuilding);
+            refreshBuildingsList();
+        }
+    }
+
+    @FXML
+    private void deleteFloor() {
+        Floor selectedFloor = (Floor) floorsList.getSelectionModel().getSelectedItem();
+        if (selectedFloor != null) {
+            AppData.deleteLocation(selectedFloor);
+            refreshFloorsList();
+        }
+    }
+
+    @FXML
+    private void deleteRoom() {
+        Room selectedRoom = (Room) roomsList.getSelectionModel().getSelectedItem();
+        if (selectedRoom != null) {
+            AppData.deleteLocation(selectedRoom);
+            refreshRoomsList();
+        }
+    }
+
+    // TODO: Allow modification of locations
 
 }

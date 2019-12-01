@@ -13,7 +13,12 @@ public class AppData {
     public static Building addBuilding(int id, String name) {
         Building building = new Building(id, name);
         realEstate.addSubLocation(building);
+        building.setParentLocation(realEstate);
         return building;
+    }
+
+    public static ArrayList<Location> getBuildings() {
+        return realEstate.getSubLocations();
     }
 
     public static Floor addFloor(int id, String name, Building parentingBuilding) {
@@ -28,5 +33,11 @@ public class AppData {
         parentingFloor.addSubLocation(room);
         room.setParentLocation(parentingFloor);
         return room;
+    }
+
+    public static void deleteLocation(Location location) {
+        SubLocationParent parentingLocation = (SubLocationParent) location.getParentLocation();
+        parentingLocation.removeSubLocation(location);
+        location.delete();
     }
 }

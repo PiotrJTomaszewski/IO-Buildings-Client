@@ -7,22 +7,22 @@ import javafx.scene.control.TextField;
 
 public class AddRoomController {
     @FXML
-    private Spinner<Integer> roomIdInput;
+    private Spinner<Integer> roomIdInput;// TODO: Fix error if user entered letters
 
     @FXML
     private TextField roomNameInput;
 
     @FXML
-    private Spinner<Integer> roomAreaInput;
+    private Spinner<Integer> roomAreaInput; // TODO: Fix error if user entered letters
 
     @FXML
-    private Spinner<Integer> roomCubeInput;
+    private Spinner<Integer> roomCubeInput; // TODO: Fix error if user entered letters
 
     @FXML
-    private Spinner<Double> roomHeatingInput;
+    private Spinner<Double> roomHeatingInput; // TODO: Fix error if user entered letters
 
     @FXML
-    private Spinner<Integer> roomLightInput;
+    private Spinner<Integer> roomLightInput; // TODO: Fix error if user entered letters
 
     @FXML
     private boolean accepted;

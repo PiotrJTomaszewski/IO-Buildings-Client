@@ -35,4 +35,10 @@ public abstract class SubLocationParent extends Location {
     public void removeSubLocation(Location sublocation) {
         subLocations.remove(sublocation);
     }
+
+    public void delete() {  // Delete all children
+        for (Location l : subLocations) {
+            l.delete();
+        }
+    }
 }

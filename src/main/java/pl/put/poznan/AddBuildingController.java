@@ -7,7 +7,7 @@ import javafx.scene.control.TextField;
 
 public class AddBuildingController {
     @FXML
-    private Spinner<Integer> buildingIdInput;
+    private Spinner<Integer> buildingIdInput;  // TODO: Fix error if user entered letters
 
     @FXML
     private TextField buildingNameInput;

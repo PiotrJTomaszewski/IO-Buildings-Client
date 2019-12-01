@@ -64,4 +64,6 @@ public class Room extends Location {
         array.add("Light: " + light);
         return array;
     }
+
+    public void delete(){};
 }
