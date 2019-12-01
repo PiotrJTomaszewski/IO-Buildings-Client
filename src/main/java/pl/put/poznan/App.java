@@ -14,12 +14,16 @@ import java.io.IOException;
 public class App extends Application {
 
     private static Scene scene;
+    private static Stage stage;
+    private static AppData appData;
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"));
+        appData = new AppData();
+        scene = new Scene(loadFXML("dataInput"));
         stage.setScene(scene);
         stage.show();
+        App.stage = stage;
     }
 
     static void setRoot(String fxml) throws IOException {
@@ -35,4 +39,7 @@ public class App extends Application {
         launch();
     }
 
+    public static Stage getStage() {
+        return stage;
+    }
 }
