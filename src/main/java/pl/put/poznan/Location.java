@@ -13,24 +13,27 @@ public abstract class Location {
 
     private Location parentLocation;
 
+    public Location() {}
 
-//    /**
-//     * Create new location instance
-//     * @param id The location's id
-//     * @param name The location's name
-//     */
-//    public Location(int id, String name) {
-//        this.id = id;
-//        this.name = name;
-//    }
-//
-//    /**
-//     * Create new location instance
-//     * @param id The location's id
-//     */
-//    public Location(int id) {
-//        this.id = id;
-//    }
+    /**
+     * Create new location instance
+     *
+     * @param id   The location's id
+     * @param name The location's name
+     */
+    public Location(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    /**
+     * Create new location instance
+     *
+     * @param id The location's id
+     */
+    public Location(int id) {
+        this.id = id;
+    }
 
     public void setParentLocation(Location parentLocation) {
         this.parentLocation = parentLocation;
@@ -64,8 +67,7 @@ public abstract class Location {
     public String toString() {
         if (name != null) {
             return id + ": " + name;
-        }
-        else {
+        } else {
             return Integer.toString(id);
         }
     }

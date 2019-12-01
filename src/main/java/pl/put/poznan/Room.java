@@ -1,10 +1,28 @@
 package pl.put.poznan;
 
+import java.util.ArrayList;
+
 public class Room extends Location {
     private int area;
     private int cube;
-    private float heating;
+    private double heating;
     private int light;
+
+    public Room(int id, int area, int cube, double heating, int light) {
+        super(id);
+        this.area = area;
+        this.cube = cube;
+        this.heating = heating;
+        this.light = light;
+    }
+
+    public Room(int id, String name, int area, int cube, double heating, int light) {
+        super(id, name);
+        this.area = area;
+        this.cube = cube;
+        this.heating = heating;
+        this.light = light;
+    }
 
     public int getArea() {
         return area;
@@ -22,11 +40,11 @@ public class Room extends Location {
         this.cube = cube;
     }
 
-    public float getHeating() {
+    public double getHeating() {
         return heating;
     }
 
-    public void setHeating(float heating) {
+    public void setHeating(double heating) {
         this.heating = heating;
     }
 
@@ -36,5 +54,14 @@ public class Room extends Location {
 
     public void setLight(int light) {
         this.light = light;
+    }
+
+    public ArrayList<String> getProperties() {
+        ArrayList<String> array = new ArrayList<>();
+        array.add("Area: " + area);
+        array.add("Cube: " + cube);
+        array.add("Heating: " + heating);
+        array.add("Light: " + light);
+        return array;
     }
 }

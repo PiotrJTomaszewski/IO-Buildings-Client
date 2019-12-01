@@ -10,6 +10,11 @@ public abstract class SubLocationParent extends Location {
         subLocations = new ArrayList<>();
     }
 
+    public SubLocationParent(int id, String name) {
+        super(id, name);
+        subLocations = new ArrayList<>();
+    }
+
     public ArrayList<Location> getSubLocations() {
         return subLocations;
     }
