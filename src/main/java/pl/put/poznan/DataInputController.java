@@ -2,21 +2,23 @@ package pl.put.poznan;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 
 public class DataInputController {
+    @FXML
+    private Label buildingId;
 
     @FXML
-    private ListView<Location> buildingsList;
+    private Label buildingName;
 
     @FXML
     private ListView<Location> floorsList;
@@ -27,20 +29,11 @@ public class DataInputController {
     @FXML
     private ListView<String> roomPropertiesList;
 
-    private void refreshBuildingsList() {
-        Building building = AppData.getBuilding();
-        buildingsList.getItems().clear();
-        buildingsList.getItems().add(building);
-        refreshFloorsList();
-    }
 
     private void refreshFloorsList() {
-        Building selectedBuilding = (Building) buildingsList.getSelectionModel().getSelectedItem();
         floorsList.getItems().clear();
-        if (selectedBuilding != null) {  // If a building is selected
-            ArrayList<Location> floors = selectedBuilding.getSubLocations();
-            floorsList.getItems().addAll(floors);
-        }
+        ArrayList<Location> floors = AppData.getBuilding().getSubLocations();
+        floorsList.getItems().addAll(floors);
         refreshRoomsList();
     }
 
@@ -65,12 +58,6 @@ public class DataInputController {
 
     @FXML
     private void initialize() {
-        buildingsList.getSelectionModel().selectedIndexProperty().addListener(
-                (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-                    refreshFloorsList();
-                }
-        );
-
         floorsList.getSelectionModel().selectedIndexProperty().addListener(
                 (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
                     refreshRoomsList();
@@ -102,29 +89,12 @@ public class DataInputController {
     }
 
     @FXML
-    private void addBuilding() throws IOException {  // TODO: Add checking for unique id
-        FXMLLoader loader = showDialog("addBuildingDialog.fxml");
-        Integer id = loader.<AddBuildingController>getController().getId();
-        String name = loader.<AddBuildingController>getController().getName();
-        if (id != null) {  // Add new building only if user pressed confirm
-            Building building = AppData.getBuilding();
-            if (building != null) {
-                buildingsList.getItems().add(building);
-            }
-        }
-    }
-
-    @FXML
     private void addFloor() throws IOException {  // TODO: Add checking for unique id
-        Building parentBuilding = (Building) buildingsList.getSelectionModel().getSelectedItem();
-        if (parentBuilding == null) {  //TODO: Add a proper message
-            return;
-        }
-        FXMLLoader loader = showDialog("addFloorDialog.fxml");
-        Integer id = loader.<AddFloorController>getController().getId();
-        String name = loader.<AddFloorController>getController().getName();
+        FXMLLoader loader = showDialog("alterFloorDialog.fxml");
+        Integer id = loader.<AlterFloorController>getController().getId();
+        String name = loader.<AlterFloorController>getController().getName();
         if (id != null) {  // Add new floor only if user pressed confirm
-            Floor floor = AppData.addFloor(id, name, parentBuilding);
+            Floor floor = AppData.addFloor(id, name);
             if (floor != null) {
                 floorsList.getItems().add(floor);
             }
@@ -133,38 +103,25 @@ public class DataInputController {
 
     @FXML
     private void addRoom() throws IOException {  // TODO: Add checking for unique id
-    Floor parentingFloor = (Floor) floorsList.getSelectionModel().getSelectedItem();
-        if(parentingFloor ==null)
-
-    { // TODO: Add a proper message
-        return;
-    }
-
-    FXMLLoader loader = showDialog("addRoomDialog.fxml");
-    Integer id = loader.<AddRoomController>getController().getId();
-    String name = loader.<AddRoomController>getController().getName();
-    int area = loader.<AddRoomController>getController().getArea();
-    int cube = loader.<AddRoomController>getController().getCube();
-    float heating = (float) loader.<AddRoomController>getController().getHeating();
-    int light = loader.<AddRoomController>getController().getLight();
-        if(id !=null)
-
-    {  // Add new room only if user pressed confirm
-        Room room = AppData.addRoom(id, name, area, cube, heating, light, parentingFloor);
-        if (room != null) {
-            roomsList.getItems().add(room);
+        Floor parentingFloor = (Floor) floorsList.getSelectionModel().getSelectedItem();
+        if (parentingFloor == null) { // TODO: Add a proper message
+            return;
         }
-    }
 
-}
-
-    @FXML
-    private void deleteBuilding() {
-        Building selectedBuilding = (Building) buildingsList.getSelectionModel().getSelectedItem();
-        if (selectedBuilding != null) {
-            AppData.deleteLocation(selectedBuilding);
-            refreshBuildingsList();
+        FXMLLoader loader = showDialog("alterRoomDialog.fxml");
+        Integer id = loader.<AlterRoomController>getController().getId();
+        String name = loader.<AlterRoomController>getController().getName();
+        int area = loader.<AlterRoomController>getController().getArea();
+        int cube = loader.<AlterRoomController>getController().getCube();
+        float heating = (float) loader.<AlterRoomController>getController().getHeating();
+        int light = loader.<AlterRoomController>getController().getLight();
+        if (id != null) {  // Add new room only if user pressed confirm
+            Room room = AppData.addRoom(id, name, area, cube, heating, light, parentingFloor);
+            if (room != null) {
+                roomsList.getItems().add(room);
+            }
         }
+
     }
 
     @FXML
@@ -182,6 +139,19 @@ public class DataInputController {
         if (selectedRoom != null) {
             AppData.deleteLocation(selectedRoom);
             refreshRoomsList();
+        }
+    }
+
+    @FXML
+    private void editBuilding() throws IOException{
+        AlterBuildingController.setInitialData(AppData.getBuilding().getId(), AppData.getBuilding().getName());
+        FXMLLoader loader = showDialog("alterBuildingDialog.fxml");
+        Integer id = loader.<AlterBuildingController>getController().getId();
+        String name = loader.<AlterBuildingController>getController().getName();
+        if (id != null) {  // Edit building only if user pressed confirm
+            AppData.setBuilding(id, name);
+            buildingId.setText(id.toString());
+            buildingName.setText(name);
         }
     }
 

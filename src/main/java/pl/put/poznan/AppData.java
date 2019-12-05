@@ -4,7 +4,7 @@ public class AppData {
     private static Building building;
 
     public AppData() {
-        building = new Building();
+        building = new Building(1, null);
     }
 
 //    // TODO: Add checking for unique id
@@ -24,10 +24,10 @@ public class AppData {
         return building;
     }
 
-    public static Floor addFloor(int id, String name, Building parentingBuilding) {
+    public static Floor addFloor(int id, String name) {
         Floor floor = new Floor(id, name);
-        parentingBuilding.addSubLocation(floor);
-        floor.setParentLocation(parentingBuilding);
+        building.addSubLocation(floor);
+        floor.setParentLocation(building);
         return floor;
     }
 
