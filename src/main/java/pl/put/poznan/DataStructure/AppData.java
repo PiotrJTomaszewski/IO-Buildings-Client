@@ -1,4 +1,4 @@
-package pl.put.poznan;
+package pl.put.poznan.DataStructure;
 
 public class AppData {
     private static Building building;

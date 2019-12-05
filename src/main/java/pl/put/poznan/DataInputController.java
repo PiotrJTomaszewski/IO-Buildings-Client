@@ -11,6 +11,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import pl.put.poznan.DataStructure.AppData;
+import pl.put.poznan.DataStructure.Floor;
+import pl.put.poznan.DataStructure.Location;
+import pl.put.poznan.DataStructure.Room;
 
 
 public class DataInputController {

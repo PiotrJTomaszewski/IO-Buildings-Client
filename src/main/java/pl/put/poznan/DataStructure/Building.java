@@ -1,6 +1,4 @@
-package pl.put.poznan;
-
-import java.util.ArrayList;
+package pl.put.poznan.DataStructure;
 
 public class Building extends SubLocationParent {
     public Building(){}

@@ -1,4 +1,4 @@
-package pl.put.poznan;
+package pl.put.poznan.DataStructure;
 
 import java.util.ArrayList;
 
