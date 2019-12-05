@@ -28,9 +28,9 @@ public class DataInputController {
     private ListView<String> roomPropertiesList;
 
     private void refreshBuildingsList() {
-        ArrayList<Location> buildings = AppData.getBuildings();
+        Building building = AppData.getBuilding();
         buildingsList.getItems().clear();
-        buildingsList.getItems().addAll(buildings);
+        buildingsList.getItems().add(building);
         refreshFloorsList();
     }
 
@@ -107,7 +107,7 @@ public class DataInputController {
         Integer id = loader.<AddBuildingController>getController().getId();
         String name = loader.<AddBuildingController>getController().getName();
         if (id != null) {  // Add new building only if user pressed confirm
-            Building building = AppData.addBuilding(id, name);
+            Building building = AppData.getBuilding();
             if (building != null) {
                 buildingsList.getItems().add(building);
             }

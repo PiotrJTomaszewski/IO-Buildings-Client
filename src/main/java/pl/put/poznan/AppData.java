@@ -1,24 +1,27 @@
 package pl.put.poznan;
 
-import java.util.ArrayList;
-
 public class AppData {
-    private static RealEstate realEstate;
+    private static Building building;
 
     public AppData() {
-        realEstate = new RealEstate();
+        building = new Building();
     }
 
-    // TODO: Add checking for unique id
-    public static Building addBuilding(int id, String name) {
-        Building building = new Building(id, name);
-        realEstate.addSubLocation(building);
-        building.setParentLocation(realEstate);
+//    // TODO: Add checking for unique id
+//    public static Building addBuilding(int id, String name) {
+//        Building building = new Building(id, name);
+//        realEstate.addSubLocation(building);
+//        building.setParentLocation(realEstate);
+//        return building;
+//    }
+
+    public static void setBuilding(int id, String name) {
+        building.setId(id);
+        building.setName(name);
+    }
+
+    public static Building getBuilding() {
         return building;
-    }
-
-    public static ArrayList<Location> getBuildings() {
-        return realEstate.getSubLocations();
     }
 
     public static Floor addFloor(int id, String name, Building parentingBuilding) {
