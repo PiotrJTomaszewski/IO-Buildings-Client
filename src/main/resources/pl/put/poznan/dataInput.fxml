@@ -1,58 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" prefHeight="660.0" prefWidth="1086.0" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.put.poznan.DataInputController">
+<Pane prefHeight="715.0" prefWidth="1059.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.put.poznan.DataInputController">
    <children>
-      <GridPane prefHeight="542.0" prefWidth="1065.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <ListView id="buildingsList" fx:id="buildingsList" editable="true" GridPane.rowIndex="1" />
-            <ListView id="floorsList" fx:id="floorsList" prefHeight="195.0" prefWidth="349.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <ListView id="roomsList" fx:id="roomsList" prefHeight="290.0" prefWidth="348.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <FlowPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2">
+      <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="715.0" prefWidth="1059.0">
+        <items>
+          <AnchorPane>
                <children>
-                  <Button fx:id="addRoomButton" mnemonicParsing="false" onMouseClicked="#addRoom" text="Add room" />
-                  <Button fx:id="editRoomButton" mnemonicParsing="false" text="Edit room" />
-                  <Button fx:id="deleteRoomButton" mnemonicParsing="false" onMouseClicked="#deleteRoom" text="Delete room" />
+                  <TitledPane animated="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="388.0" prefWidth="1057.0" text="Data Input">
+                     <content>
+                        <AnchorPane prefHeight="411.0" prefWidth="1055.0">
+                           <children>
+                              <Pane>
+                                 <children>
+                                    <HBox layoutX="71.0" layoutY="134.0">
+                                       <children>
+                                          <ListView id="floorsList" fx:id="floorsList" prefHeight="208.0" prefWidth="319.0" />
+                                          <ListView id="roomsList" fx:id="roomsList" prefHeight="208.0" prefWidth="319.0" />
+                                          <ListView fx:id="roomPropertiesList" prefHeight="208.0" prefWidth="319.0" />
+                                       </children>
+                                    </HBox>
+                                    <FlowPane layoutX="71.0" layoutY="91.0">
+                                       <children>
+                                          <Button fx:id="addFloorButton" mnemonicParsing="false" onMouseClicked="#addFloor" text="Add floor" />
+                                          <Button fx:id="editFloorButton" mnemonicParsing="false" onMouseClicked="#editFloor" text="Edit floor" />
+                                          <Button fx:id="deleteFloorButton" mnemonicParsing="false" onMouseClicked="#deleteFloor" prefHeight="26.0" prefWidth="105.0" text="Delete floor" />
+                                       </children>
+                                    </FlowPane>
+                                    <FlowPane layoutX="393.0" layoutY="91.0">
+                                       <children>
+                                          <Button fx:id="addRoomButton" mnemonicParsing="false" onMouseClicked="#addRoom" text="Add room" />
+                                          <Button fx:id="editRoomButton" mnemonicParsing="false" onMouseClicked="#editRoom" text="Edit room" />
+                                          <Button fx:id="deleteRoomButton" mnemonicParsing="false" onMouseClicked="#deleteRoom" text="Delete room" />
+                                       </children>
+                                    </FlowPane>
+                                    <FlowPane layoutX="71.0" layoutY="14.0" prefHeight="85.0" prefWidth="445.0">
+                                       <children>
+                                          <GridPane prefHeight="60.0" prefWidth="300.0">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                             <children>
+                                                <Label text="Building id" />
+                                                <Label text="Building name" GridPane.rowIndex="1" />
+                                                <Label fx:id="buildingId" GridPane.columnIndex="1" />
+                                                <Label fx:id="buildingName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                             </children>
+                                          </GridPane>
+                                          <Button fx:id="editBuildingButton" mnemonicParsing="false" onMouseClicked="#editBuilding" text="Edit building" />
+                                       </children>
+                                    </FlowPane>
+                                 </children>
+                              </Pane>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </TitledPane>
                </children>
-            </FlowPane>
-            <FlowPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <Button fx:id="addFloorButton" mnemonicParsing="false" onMouseClicked="#addFloor" text="Add floor" />
-                  <Button fx:id="editFloorButton" mnemonicParsing="false" text="Edit floor" />
-                  <Button fx:id="deleteFloorButton" mnemonicParsing="false" onMouseClicked="#deleteFloor" text="Delete floor" />
+                  <TitledPane animated="false" prefHeight="370.0" prefWidth="1057.0" text="Query sending" AnchorPane.bottomAnchor="-168.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <content>
+                      <AnchorPane prefHeight="249.0" prefWidth="1055.0">
+                           <children>
+                              <Pane layoutX="20.4" layoutY="20.4" prefHeight="174.0" prefWidth="1034.0" AnchorPane.bottomAnchor="93.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="10.0">
+                                 <children>
+                                    <FlowPane layoutX="14.0" layoutY="84.0" prefHeight="26.0" prefWidth="196.0" />
+                                    <FlowPane layoutX="14.0" layoutY="14.0" prefHeight="137.0" prefWidth="184.0">
+                                       <children>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Location id" />
+                                          <Spinner fx:id="locationIdSpinner" />
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Query type" />
+                                          <ComboBox fx:id="queryTypeBox" prefWidth="150.0" />
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Energy threshold" />
+                                          <Spinner fx:id="energyThresholdBox" />
+                                       </children>
+                                    </FlowPane>
+                                    <FlowPane layoutX="607.0" layoutY="14.0" prefHeight="284.0" prefWidth="289.0">
+                                       <children>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Result" />
+                                          <TextArea fx:id="resultBox" editable="false" prefHeight="200.0" prefWidth="355.0" />
+                                       </children>
+                                    </FlowPane>
+                                    <Button fx:id="sendQueryButton" layoutX="273.0" layoutY="134.0" mnemonicParsing="false" onAction="#sendQuery" text="Send Query" />
+                                    <FlowPane layoutX="220.0" layoutY="14.0" prefHeight="120.0" prefWidth="200.0">
+                                       <children>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Server address" />
+                                          <TextField fx:id="serverAddressBox" />
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Server port" />
+                                          <Spinner fx:id="serverPortBox" />
+                                       </children>
+                                    </FlowPane>
+                                 </children>
+                              </Pane>
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </TitledPane>
                </children>
-            </FlowPane>
-            <FlowPane prefHeight="200.0" prefWidth="200.0">
-               <children>
-                  <Button id="addBuildingButton" fx:id="addBuildingButton" mnemonicParsing="false" onMouseClicked="#addBuilding" text="Add building" />
-                  <Button fx:id="editBuildingButton" mnemonicParsing="false" text="Edit building" />
-                  <Button fx:id="deleteBuildingButton" mnemonicParsing="false" onMouseClicked="#deleteBuilding" text="Delete building" />
-               </children>
-            </FlowPane>
-            <ListView fx:id="roomPropertiesList" prefHeight="491.0" prefWidth="261.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-         </children>
-      </GridPane>
-      <Button fx:id="primaryButton" onAction="#switchToSecondary" text="Switch to Secondary View" />
+            </AnchorPane>
+        </items>
+      </SplitPane>
    </children>
-   <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-   </padding>
-</VBox>
+</Pane>

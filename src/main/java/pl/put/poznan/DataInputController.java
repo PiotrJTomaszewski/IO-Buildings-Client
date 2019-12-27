@@ -2,21 +2,25 @@ package pl.put.poznan;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
+import pl.put.poznan.DataStructure.*;
 
 
 public class DataInputController {
+    @FXML
+    private Label buildingId;
 
     @FXML
-    private ListView<Location> buildingsList;
+    private Label buildingName;
 
     @FXML
     private ListView<Location> floorsList;
@@ -27,20 +31,60 @@ public class DataInputController {
     @FXML
     private ListView<String> roomPropertiesList;
 
-    private void refreshBuildingsList() {
-        ArrayList<Location> buildings = AppData.getBuildings();
-        buildingsList.getItems().clear();
-        buildingsList.getItems().addAll(buildings);
-        refreshFloorsList();
+    @FXML
+    private Spinner locationIdSpinner;
+
+    @FXML
+    private ComboBox queryTypeBox;
+
+    @FXML
+    private TextField serverAddressBox;
+
+    @FXML
+    private Spinner serverPortBox;
+
+    @FXML
+    private TextArea resultBox;
+
+    @FXML
+    private Spinner energyThresholdBox;
+
+    private boolean checkIdUniqness(int id) {
+        Building building = AppData.getBuilding();
+        if (id == building.getId())
+            return false;
+        ArrayList<Location> floors = building.getSubLocations();
+        for (Location floor : floors) {
+            if (id == floor.getId())
+                return false;
+            ArrayList<Location> roomsAtFloor = ((Floor) floor).getSubLocations();
+            for (Location room : roomsAtFloor) {
+                if (id == room.getId())
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    private int getNextAvailableId() {
+        int maxId = AppData.getBuilding().getId();
+        ArrayList<Location> floors = AppData.getBuilding().getSubLocations();
+        for (Location floor : floors) {
+            if (floor.getId() > maxId)
+                maxId = floor.getId();
+            ArrayList<Location> roomsAtFloor = ((Floor) floor).getSubLocations();
+            for (Location room : roomsAtFloor) {
+                if (room.getId() > maxId)
+                    maxId = room.getId();
+            }
+        }
+        return maxId + 1;
     }
 
     private void refreshFloorsList() {
-        Building selectedBuilding = (Building) buildingsList.getSelectionModel().getSelectedItem();
         floorsList.getItems().clear();
-        if (selectedBuilding != null) {  // If a building is selected
-            ArrayList<Location> floors = selectedBuilding.getSubLocations();
-            floorsList.getItems().addAll(floors);
-        }
+        ArrayList<Location> floors = AppData.getBuilding().getSubLocations();
+        floorsList.getItems().addAll(floors);
         refreshRoomsList();
     }
 
@@ -65,12 +109,8 @@ public class DataInputController {
 
     @FXML
     private void initialize() {
-        buildingsList.getSelectionModel().selectedIndexProperty().addListener(
-                (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-                    refreshFloorsList();
-                }
-        );
-
+        Integer defaultBuildingId = AppData.getBuilding().getId();
+        buildingId.setText(defaultBuildingId.toString());
         floorsList.getSelectionModel().selectedIndexProperty().addListener(
                 (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
                     refreshRoomsList();
@@ -82,12 +122,28 @@ public class DataInputController {
                     refreshRoomPropertiesList();
                 }
         );
+        SpinnerValueFactory<Integer> locationIdFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10000, 0); // params: step by, max min
+        locationIdFactory.setValue(1);
+        locationIdSpinner.setValueFactory(locationIdFactory);
 
-    }
+        ObservableList<String> queryTypes =
+                FXCollections.observableArrayList(
+                        "Get area",
+                        "Get cube",
+                        "Get lighting power",
+                        "Get heating power per volume",
+                        "Get rooms that use too much energy"
+                );
+        queryTypeBox.setItems(queryTypes);
 
-    @FXML
-    private void switchToSecondary() throws IOException { //TODO: Change name
-        App.setRoot("querry");
+        SpinnerValueFactory<Integer> energyThresholdFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10000, 0);
+        energyThresholdFactory.setValue(10);
+        energyThresholdBox.setValueFactory(energyThresholdFactory);
+
+        serverAddressBox.setText("127.0.0.1");
+        SpinnerValueFactory<Integer> portFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10000, 0); // params: step by, max min
+        portFactory.setValue(5000);
+        serverPortBox.setValueFactory(portFactory);
     }
 
     private FXMLLoader showDialog(String dialogName) throws IOException {
@@ -102,68 +158,50 @@ public class DataInputController {
     }
 
     @FXML
-    private void addBuilding() throws IOException {  // TODO: Add checking for unique id
-        FXMLLoader loader = showDialog("addBuildingDialog.fxml");
-        Integer id = loader.<AddBuildingController>getController().getId();
-        String name = loader.<AddBuildingController>getController().getName();
-        if (id != null) {  // Add new building only if user pressed confirm
-            Building building = AppData.addBuilding(id, name);
-            if (building != null) {
-                buildingsList.getItems().add(building);
+    private void addFloor() throws IOException {
+        AlterFloorController.setInitialData(getNextAvailableId(), null);
+        FXMLLoader loader = showDialog("alterFloorDialog.fxml");
+        Integer id = loader.<AlterFloorController>getController().getId();
+        String name = loader.<AlterFloorController>getController().getName();
+        if (id != null) {  // Add new floor only if user pressed confirm
+            if (checkIdUniqness(id)) { // If the id is unique
+                Floor floor = AppData.addFloor(id, name);
+                if (floor != null) {
+                    floorsList.getItems().add(floor);
+                }
+            } else {
+                WarningDialogController.setInitialData("Id has to be unique");
+                showDialog("warningDialog.fxml");
             }
         }
     }
 
     @FXML
-    private void addFloor() throws IOException {  // TODO: Add checking for unique id
-        Building parentBuilding = (Building) buildingsList.getSelectionModel().getSelectedItem();
-        if (parentBuilding == null) {  //TODO: Add a proper message
+    private void addRoom() throws IOException {
+        AlterRoomController.setInitialData(getNextAvailableId(), null, 1, 1, 1, 1);
+        Floor parentingFloor = (Floor) floorsList.getSelectionModel().getSelectedItem();
+        if (parentingFloor == null) {
+            WarningDialogController.setInitialData("No floor selected");
+            showDialog("warningDialog.fxml");
             return;
         }
-        FXMLLoader loader = showDialog("addFloorDialog.fxml");
-        Integer id = loader.<AddFloorController>getController().getId();
-        String name = loader.<AddFloorController>getController().getName();
-        if (id != null) {  // Add new floor only if user pressed confirm
-            Floor floor = AppData.addFloor(id, name, parentBuilding);
-            if (floor != null) {
-                floorsList.getItems().add(floor);
+        FXMLLoader loader = showDialog("alterRoomDialog.fxml");
+        Integer id = loader.<AlterRoomController>getController().getId();
+        String name = loader.<AlterRoomController>getController().getName();
+        int area = loader.<AlterRoomController>getController().getArea();
+        int cube = loader.<AlterRoomController>getController().getCube();
+        float heating = (float) loader.<AlterRoomController>getController().getHeating();
+        int light = loader.<AlterRoomController>getController().getLight();
+        if (id != null) {  // Add new room only if user pressed confirm
+            if (checkIdUniqness(id)) {
+                Room room = AppData.addRoom(id, name, area, cube, heating, light, parentingFloor);
+                if (room != null) {
+                    roomsList.getItems().add(room);
+                }
+            } else {
+                WarningDialogController.setInitialData("Id has to be unique");
+                showDialog("warningDialog.fxml");
             }
-        }
-    }
-
-    @FXML
-    private void addRoom() throws IOException {  // TODO: Add checking for unique id
-    Floor parentingFloor = (Floor) floorsList.getSelectionModel().getSelectedItem();
-        if(parentingFloor ==null)
-
-    { // TODO: Add a proper message
-        return;
-    }
-
-    FXMLLoader loader = showDialog("addRoomDialog.fxml");
-    Integer id = loader.<AddRoomController>getController().getId();
-    String name = loader.<AddRoomController>getController().getName();
-    int area = loader.<AddRoomController>getController().getArea();
-    int cube = loader.<AddRoomController>getController().getCube();
-    float heating = (float) loader.<AddRoomController>getController().getHeating();
-    int light = loader.<AddRoomController>getController().getLight();
-        if(id !=null)
-
-    {  // Add new room only if user pressed confirm
-        Room room = AppData.addRoom(id, name, area, cube, heating, light, parentingFloor);
-        if (room != null) {
-            roomsList.getItems().add(room);
-        }
-    }
-
-}
-
-    @FXML
-    private void deleteBuilding() {
-        Building selectedBuilding = (Building) buildingsList.getSelectionModel().getSelectedItem();
-        if (selectedBuilding != null) {
-            AppData.deleteLocation(selectedBuilding);
-            refreshBuildingsList();
         }
     }
 
@@ -185,6 +223,119 @@ public class DataInputController {
         }
     }
 
-    // TODO: Allow modification of locations
+    @FXML
+    private void editBuilding() throws IOException {
+        int oldId = AppData.getBuilding().getId();
+        AlterBuildingController.setInitialData(oldId, AppData.getBuilding().getName());
+        FXMLLoader loader = showDialog("alterBuildingDialog.fxml");
+        Integer id = loader.<AlterBuildingController>getController().getId();
+        String name = loader.<AlterBuildingController>getController().getName();
+        if (id != null) {  // Edit building only if user pressed confirm
+            if (checkIdUniqness(id) || id == oldId) {
+                AppData.setBuilding(id, name);
+                buildingId.setText(id.toString());
+                buildingName.setText(name);
+            } else {
+                WarningDialogController.setInitialData("Id has to be unique");
+                showDialog("warningDialog.fxml");
+            }
+        }
+    }
 
+    @FXML
+    private void editFloor() throws IOException {
+        Floor selectedFloor = (Floor) floorsList.getSelectionModel().getSelectedItem();
+        if (selectedFloor != null) {
+            int oldId = selectedFloor.getId();
+            AlterFloorController.setInitialData(oldId, selectedFloor.getName());
+            FXMLLoader loader = showDialog("alterFloorDialog.fxml");
+            Integer id = loader.<AlterFloorController>getController().getId();
+            String name = loader.<AlterFloorController>getController().getName();
+            if (id != null) {  // Edit floor only if user pressed confirm
+                if (checkIdUniqness(id) || id == oldId) {
+                    selectedFloor.setId(id);
+                    selectedFloor.setName(name);
+                    floorsList.getItems().remove(selectedFloor);
+                    floorsList.getItems().add(selectedFloor);
+                } else {
+                    WarningDialogController.setInitialData("Id has to be unique");
+                    showDialog("warningDialog.fxml");
+                }
+            }
+        } else {
+            WarningDialogController.setInitialData("No floor selected");
+            showDialog("warningDialog.fxml");
+        }
+    }
+
+    @FXML
+    private void editRoom() throws IOException {
+        Room selectedRoom = (Room) roomsList.getSelectionModel().getSelectedItem();
+        if (selectedRoom != null) {
+            int oldId = selectedRoom.getId();
+            AlterRoomController.setInitialData(
+                    oldId, selectedRoom.getName(),
+                    selectedRoom.getArea(), selectedRoom.getCube(),
+                    selectedRoom.getHeating(), selectedRoom.getLight());
+            FXMLLoader loader = showDialog("alterRoomDialog.fxml");
+            Integer id = loader.<AlterRoomController>getController().getId();
+            String name = loader.<AlterRoomController>getController().getName();
+            int area = loader.<AlterRoomController>getController().getArea();
+            int cube = loader.<AlterRoomController>getController().getCube();
+            float heating = (float) loader.<AlterRoomController>getController().getHeating();
+            int light = loader.<AlterRoomController>getController().getLight();
+            if (id != null) {  // Edit room only if user pressed confirm
+                if (checkIdUniqness(id) || id == oldId) {
+                    selectedRoom.setId(id);
+                    selectedRoom.setName(name);
+                    selectedRoom.setArea(area);
+                    selectedRoom.setCube(cube);
+                    selectedRoom.setHeating(heating);
+                    selectedRoom.setLight(light);
+                    roomsList.getItems().remove(selectedRoom);
+                    roomsList.getItems().add(selectedRoom);
+                }
+            } else {
+                WarningDialogController.setInitialData("Id has to be unique");
+                showDialog("warningDialog.fxml");
+            }
+        } else {
+            WarningDialogController.setInitialData("No room selected");
+            showDialog("warningDialog.fxml");
+        }
+    }
+
+    @FXML
+    private void sendQuery() {
+        String serverAddress = serverAddressBox.getText();
+        int serverPort = (int) serverPortBox.getValue();
+        int locationId = (int) locationIdSpinner.getValue();
+        int selectedQueryType = queryTypeBox.getSelectionModel().getSelectedIndex();
+        int energyThreshold = (int) energyThresholdBox.getValue();
+        // All of the locations in the building
+        Building building = AppData.getBuilding();
+        ArrayList<Location> floors = building.getSubLocations();
+        ArrayList<Location> rooms = new ArrayList<>();
+        for (Location floor : floors) {
+            rooms.addAll(((Floor) floor).getSubLocations());
+        }
+        for (Location room : rooms) {
+            System.out.println(room.getName());
+        }
+        // TODO: Send query
+        String result = null;
+        switch (selectedQueryType) {
+            case 0:
+                break; // Get area
+            case 1:
+                break; // Get cube
+            case 2:
+                break; // Get heating power per volume
+            case 3:
+                break; // Get rooms that use too much energy
+            default:
+                break;
+        }
+        resultBox.setText(result);
+    }
 }
