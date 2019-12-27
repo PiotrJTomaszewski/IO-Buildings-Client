@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
+import pl.put.poznan.DataStructure.Room;
 
 public class AlterRoomController {
     @FXML
@@ -49,6 +50,9 @@ public class AlterRoomController {
         SpinnerValueFactory<Double> valueFactory4 = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.5, 1000, 1);
         valueFactory4.setValue(heating);
         roomHeatingInput.setValueFactory(valueFactory4);
+
+        roomNameInput.setText(name);
+
     }
 
     @FXML
