@@ -1,9 +1,12 @@
 package pl.put.poznan.DataStructure;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 
 public abstract class SubLocationParent extends Location {
     //TODO: Add documentation
+    @JsonProperty("locations")
     private ArrayList<Location> subLocations;
 
     public SubLocationParent() {

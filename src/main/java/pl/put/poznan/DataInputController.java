@@ -2,7 +2,7 @@ package pl.put.poznan;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
+import java.util.List;
 
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -13,7 +13,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import pl.put.poznan.DataStructure.*;
-
 
 public class DataInputController {
     @FXML
@@ -141,8 +140,8 @@ public class DataInputController {
         energyThresholdBox.setValueFactory(energyThresholdFactory);
 
         serverAddressBox.setText("127.0.0.1");
-        SpinnerValueFactory<Integer> portFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10000, 0); // params: step by, max min
-        portFactory.setValue(5000);
+        SpinnerValueFactory<Integer> portFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 65535, 1); // params: step by, max min
+        portFactory.setValue(8080);
         serverPortBox.setValueFactory(portFactory);
     }
 
@@ -322,16 +321,33 @@ public class DataInputController {
         for (Location room : rooms) {
             System.out.println(room.getName());
         }
-        // TODO: Send query
+
         String result = null;
+        Connection connection = new Connection(serverAddress, serverPort);
         switch (selectedQueryType) {
             case 0:
+                result = Integer.toString(connection.getArea(building, locationId));
                 break; // Get area
             case 1:
+                result = Integer.toString(connection.getCube(building, locationId));
                 break; // Get cube
             case 2:
-                break; // Get heating power per volume
+                result = Double.toString(connection.getLight(building, locationId));
+                break; // Get light
             case 3:
+                result = Double.toString(connection.getHeating(building, locationId));
+                break; // Get heating power per volume
+            case 4:
+                List<Location> exceeding = connection.getHighEnergyRooms(building, energyThreshold, locationId);
+                StringBuilder roomsString = new StringBuilder();
+                for (Location l : exceeding) {
+                    roomsString.append(l);
+                    roomsString.append('\n');
+                };
+                result = roomsString.toString();
+                if (exceeding.size() == 0) {
+                    result = "No such rooms";
+                }
                 break; // Get rooms that use too much energy
             default:
                 break;

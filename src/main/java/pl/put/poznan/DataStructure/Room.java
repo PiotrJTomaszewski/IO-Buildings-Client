@@ -8,6 +8,10 @@ public class Room extends Location {
     private double heating;
     private int light;
 
+    public Room() {
+
+    }
+
     public Room(int id, int area, int cube, double heating, int light) {
         super(id);
         this.area = area;
