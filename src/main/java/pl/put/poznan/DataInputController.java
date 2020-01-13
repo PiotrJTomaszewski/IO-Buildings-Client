@@ -3,7 +3,6 @@ package pl.put.poznan;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,7 +12,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import pl.put.poznan.DataStructure.*;
-
 
 public class DataInputController {
     @FXML
@@ -141,8 +139,8 @@ public class DataInputController {
         energyThresholdBox.setValueFactory(energyThresholdFactory);
 
         serverAddressBox.setText("127.0.0.1");
-        SpinnerValueFactory<Integer> portFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10000, 0); // params: step by, max min
-        portFactory.setValue(5000);
+        SpinnerValueFactory<Integer> portFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 65535, 1); // params: step by, max min
+        portFactory.setValue(8080);
         serverPortBox.setValueFactory(portFactory);
     }
 
@@ -322,10 +320,12 @@ public class DataInputController {
         for (Location room : rooms) {
             System.out.println(room.getName());
         }
-        // TODO: Send query
+
         String result = null;
+        Connection connection = new Connection(serverAddress, serverPort);
         switch (selectedQueryType) {
             case 0:
+                result = Integer.toString(connection.getArea(building, locationId));
                 break; // Get area
             case 1:
                 break; // Get cube
