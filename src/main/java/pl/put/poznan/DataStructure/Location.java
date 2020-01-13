@@ -1,5 +1,15 @@
 package pl.put.poznan.DataStructure;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Room.class, name = "room"),
+        @JsonSubTypes.Type(value = Building.class, name = "building"),
+        @JsonSubTypes.Type(value = Floor.class, name = "floor")
+})
 public abstract class Location {
     /**
      * Location's id
@@ -11,6 +21,7 @@ public abstract class Location {
      */
     private String name;
 
+    @JsonIgnore
     private Location parentLocation;
 
     public Location() {}
@@ -43,6 +54,7 @@ public abstract class Location {
         return parentLocation;
     }
 
+    @JsonIgnore
     public int getParentLocationId() {
         return parentLocation.getId();
     }
