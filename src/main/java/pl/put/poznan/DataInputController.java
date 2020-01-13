@@ -2,6 +2,7 @@ package pl.put.poznan;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -328,10 +329,25 @@ public class DataInputController {
                 result = Integer.toString(connection.getArea(building, locationId));
                 break; // Get area
             case 1:
+                result = Integer.toString(connection.getCube(building, locationId));
                 break; // Get cube
             case 2:
-                break; // Get heating power per volume
+                result = Double.toString(connection.getLight(building, locationId));
+                break; // Get light
             case 3:
+                result = Double.toString(connection.getHeating(building, locationId));
+                break; // Get heating power per volume
+            case 4:
+                List<Location> exceeding = connection.getHighEnergyRooms(building, energyThreshold, locationId);
+                StringBuilder roomsString = new StringBuilder();
+                for (Location l : exceeding) {
+                    roomsString.append(l);
+                    roomsString.append('\n');
+                };
+                result = roomsString.toString();
+                if (exceeding.size() == 0) {
+                    result = "No such rooms";
+                }
                 break; // Get rooms that use too much energy
             default:
                 break;
